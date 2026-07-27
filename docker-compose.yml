@@ -1,0 +1,43 @@
+# Runs the whole product locally with one command:
+#
+#   ANTHROPIC_API_KEY=sk-ant-... docker compose up --build
+#
+# The key is optional. Without it the backend reports "degraded" on /api/health, the AI
+# tab shows an amber banner, and every measurement still runs.
+
+services:
+  api:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ALLOWED_ORIGINS: http://localhost:3000
+      AI_ENABLED: ${AI_ENABLED:-true}
+      DEBUG: ${DEBUG:-false}
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=4).status==200 else 1)"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      # Server-side only — the browser never learns the API origin.
+      API_URL: http://api:8000
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped

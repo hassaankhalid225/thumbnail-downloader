@@ -1,0 +1,27 @@
+# ThumbIQ backend — pinned to the versions verified current on 2026-07-27.
+fastapi==0.140.0
+uvicorn[standard]==0.51.0
+yt-dlp>=2026.7.4
+anthropic>=0.120.0
+pillow==12.3.0
+# contrib build: ships cv2.saliency in addition to the core modules.
+# analysis/composition.py falls back to a NumPy spectral-residual implementation
+# if the contrib saliency module is unavailable, so the plain headless build works too.
+opencv-contrib-python-headless==5.0.0.93
+numpy==2.4.6
+scikit-learn==1.9.0
+pytesseract==0.3.13
+httpx==0.28.1
+pydantic==2.13.4
+pydantic-settings==2.14.2
+python-dotenv==1.2.2
+slowapi==0.1.10
+cachetools==7.1.6
+python-multipart==0.0.32
+beautifulsoup4==4.15.0
+lxml==6.1.1
+
+# --- dev / test only ---
+pytest==9.1.1
+pytest-asyncio==1.4.0
+respx==0.23.1
